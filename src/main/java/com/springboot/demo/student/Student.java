@@ -1,25 +1,38 @@
 package com.springboot.demo.student;
 
+import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.Period;
 
+@Entity
+@Table
 public class Student {
+    @Id
+    @SequenceGenerator(
+            name = "student_sequence", // same
+            sequenceName = "student_sequence", // always name the sequence
+            allocationSize = 1 // increment id by one
+    )
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE, // generate from our sequence generator
+            generator = "student_sequence"
+    )
     private Long id;
     private String name;
+    @Transient // removes column from db as its unnecessary
     private Integer age;
     private LocalDate dob;
     private String email;
 
-    public Student(String name, Integer age, LocalDate dob, String email) {
+    public Student(String name, LocalDate dob, String email) {
         this.name = name;
-        this.age = age;
         this.dob = dob;
         this.email = email;
     }
 
-    public Student(Long id, String name, Integer age, LocalDate dob, String email) {
+    public Student(Long id, String name, LocalDate dob, String email) {
         this.id = id;
         this.name = name;
-        this.age = age;
         this.dob = dob;
         this.email = email;
     }
@@ -44,7 +57,7 @@ public class Student {
     }
 
     public Integer getAge() {
-        return age;
+        return Period.between(this.dob, LocalDate.now()).getYears();
     }
 
     public void setAge(Integer age) {
